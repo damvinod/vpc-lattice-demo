@@ -68,18 +68,3 @@ module "demo_service" {
     Name = "${local.name}-service"
   })
 }
-
-data "aws_iam_policy_document" "demo_service_task_execute" {
-  version = "2012-10-17"
-  statement {
-    actions = ["logs:CreateLogGroup"]
-    effect = "Allow"
-    resources = ["*"]
-  }
-}
-
-resource "aws_iam_policy" "demo_service_task_execute" {
-  name        = "${local.name}-task-exec"
-  description = "Policy to allow access to create log group."
-  policy      = data.aws_iam_policy_document.demo_service_task_execute.json
-}
