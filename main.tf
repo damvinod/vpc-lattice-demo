@@ -10,6 +10,21 @@ locals {
   }
   docker_example        = "${local.team}-${local.environment}-docker-example"
   rds_name        = "${local.name}-rds"
+
+  tasks_iam_role_statements = {
+    execute_allow = {
+      actions = ["ecs:ExecuteCommand"]
+      effect = "Allow"
+      resources = [module.ecs.cluster_arn]
+    }
+  }
+  task_exec_iam_statements = {
+    create_log_group_for_service_connect = {
+      actions = ["logs:CreateLogGroup"]
+      effect = "Allow"
+      resources = ["*"]
+    }
+  }
 }
 
 data "aws_region" "current" {}
