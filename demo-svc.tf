@@ -17,7 +17,7 @@ module "demo_service" {
 
   service_connect_configuration = {
     enabled   = var.enable_service_connect_demo
-    namespace = var.enable_service_connect_demo ? aws_service_discovery_http_namespace.service_connect_namespace[0].name : null
+    namespace = var.enable_service_connect_demo ? aws_service_discovery_private_dns_namespace.service_connect_namespace[0].name : null
   }
 
   container_definitions = {

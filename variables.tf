@@ -15,5 +15,6 @@ variable "create_rds" {
 
 variable "enable_service_connect_demo" {
   type = bool
-  default = true
+  default = false
+  description = "This feature toggle demonstrates service_connect feature by deploying hello-world-v1-svc in same subnet as demo-svc. To showcase the connectivity between these 2 services."
 }

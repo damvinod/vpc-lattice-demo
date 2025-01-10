@@ -22,7 +22,7 @@ module "hello_world_svc_v2" {
     # log_configuration = {
     #
     # }
-    namespace = aws_service_discovery_http_namespace.service_connect_namespace[0].name
+    namespace = aws_service_discovery_private_dns_namespace.service_connect_namespace[0].name
     service = {
       client_alias = {
         dns_name = "hello-world"
@@ -83,10 +83,11 @@ module "hello_world_svc_v2" {
   })
 }
 
-resource "aws_service_discovery_http_namespace" "service_connect_namespace" {
+resource "aws_service_discovery_private_dns_namespace" "service_connect_namespace" {
   count = var.enable_service_connect_demo ? 1 : 0
 
   name = local.hello_world_v1_svc
+  vpc  = module.demo_service_vpc.vpc_id
 
   tags = merge(local.tags, {
     Name = local.hello_world_v1_svc
