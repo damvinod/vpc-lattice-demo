@@ -10,6 +10,7 @@ locals {
   }
   docker_example        = "${local.team}-${local.environment}-docker-example"
   rds_name        = "${local.name}-rds"
+  service_connect_example        = "${local.team}-${local.environment}-service-connect-example"
 
   tasks_iam_role_statements = {
     execute_allow = {
