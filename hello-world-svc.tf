@@ -57,7 +57,7 @@ module "hello_world" {
       cpu       = 256
       memory    = 512
       essential = true
-      image     = "vinodreddy25/docker-example:master"
+      image     = "vinodreddy25/hello-world:master"
       port_mappings = [
         {
           name          = "port-8080"
