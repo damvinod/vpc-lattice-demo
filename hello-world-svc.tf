@@ -1,5 +1,5 @@
-resource "aws_ecs_service" "docker_example_service" {
-  name    = local.docker_example
+resource "aws_ecs_service" "hello_world_svc" {
+  name    = local.hello_world_svc
   cluster = module.ecs.cluster_arn
 
   deployment_maximum_percent         = 200
@@ -12,36 +12,36 @@ resource "aws_ecs_service" "docker_example_service" {
   launch_type                        = "FARGATE"
   propagate_tags                     = "NONE"
 
-  task_definition = module.docker_example.task_definition_arn
+  task_definition = module.hello_world.task_definition_arn
 
   network_configuration {
     assign_public_ip = true
-    security_groups = [module.docker_example.security_group_id]
-    subnets          = module.docker_example_vpc.private_subnets
+    security_groups = [module.hello_world.security_group_id]
+    subnets          = module.hello_world_vpc.private_subnets
   }
 
   vpc_lattice_configurations {
     port_name        = "port-8080"
     role_arn         = aws_iam_role.ecs_infra_role.arn
-    target_group_arn = aws_vpclattice_target_group.docker_example.arn
+    target_group_arn = aws_vpclattice_target_group.hello_world.arn
   }
 
   tags = merge(local.tags, {
-    Name = local.docker_example
+    Name = local.hello_world_svc
   })
   tags_all = merge(local.tags, {
-    Name = local.docker_example
+    Name = local.hello_world_svc
   })
 }
 
-module "docker_example" {
+module "hello_world" {
   source = "terraform-aws-modules/ecs/aws//modules/service"
 
   cpu    = 256
   memory = 512
 
   create_service = false
-  name           = local.docker_example
+  name           = local.hello_world_svc
   cluster_arn    = module.ecs.cluster_arn
 
   assign_public_ip       = true
@@ -53,7 +53,7 @@ module "docker_example" {
   task_exec_iam_statements = local.task_exec_iam_statements
 
   container_definitions = {
-    docker-example = {
+    hello_world_task = {
       cpu       = 256
       memory    = 512
       essential = true
@@ -77,7 +77,7 @@ module "docker_example" {
     }
   }
 
-  subnet_ids = module.docker_example_vpc.private_subnets
+  subnet_ids = module.hello_world_vpc.private_subnets
 
   security_group_rules = {
     ingress_port_8080 = {
@@ -98,6 +98,6 @@ module "docker_example" {
   }
 
   tags = merge(local.tags, {
-    Name = local.docker_example
+    Name = local.hello_world_svc
   })
 }

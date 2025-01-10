@@ -8,9 +8,10 @@ locals {
     stack       = local.stack
     environment = local.environment
   }
-  docker_example        = "${local.team}-${local.environment}-docker-example"
-  rds_name        = "${local.name}-rds"
-  service_connect_example        = "${local.team}-${local.environment}-service-connect-example"
+
+  hello_world_svc        = "${local.team}-${local.environment}-hello-world-svc"
+  demo_svc        = "${local.team}-${local.environment}-demo-svc"
+  hello_world_v1_svc        = "${local.team}-${local.environment}-hello-world-v1-svc"
 
   tasks_iam_role_statements = {
     execute_allow = {
@@ -26,6 +27,8 @@ locals {
       resources = ["*"]
     }
   }
+
+  rds_name        = "${local.name}-rds"
 }
 
 data "aws_region" "current" {}

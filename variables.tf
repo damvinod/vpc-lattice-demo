@@ -15,5 +15,5 @@ variable "create_rds" {
 
 variable "enable_service_connect_demo" {
   type = bool
-  default = false
+  default = true
 }

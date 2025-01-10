@@ -1,12 +1,10 @@
-module "service_connect_demo" {
-  count = var.enable_service_connect_demo ? 1 : 0
-
+module "demo_service" {
   source = "terraform-aws-modules/ecs/aws//modules/service"
 
   cpu    = 256
   memory = 512
 
-  name        = local.service_connect_example
+  name        = local.demo_svc
   cluster_arn = module.ecs.cluster_arn
 
   assign_public_ip = true
@@ -18,27 +16,16 @@ module "service_connect_demo" {
   task_exec_iam_statements  = local.task_exec_iam_statements
 
   service_connect_configuration = {
-    enabled   = true
-    # log_configuration = {
-    #
-    # }
-    namespace = aws_service_discovery_http_namespace.service_connect_namespace[0].name
-    service = {
-      client_alias = {
-        dns_name = "docker-example"
-        port     = 8080
-      }
-      discovery_name = "docker-example"
-      port_name      = "port-8080"
-    }
+    enabled   = var.enable_service_connect_demo
+    namespace = var.enable_service_connect_demo ? aws_service_discovery_http_namespace.service_connect_namespace[0].name : null
   }
 
   container_definitions = {
-    service_connect_demo = {
+    demo_service = {
       cpu       = 256
       memory    = 512
       essential = true
-      image     = "vinodreddy25/docker-example:master"
+      image     = "vinodreddy25/demo-service:master"
       port_mappings = [
         {
           name          = "port-8080"
@@ -50,6 +37,14 @@ module "service_connect_demo" {
         {
           name  = "ENVIRONMENT"
           value = var.environment
+        },
+        {
+          name  = "HELLO_WORLD_HOST"
+          value = aws_vpclattice_service.hello_world.dns_entry[0].domain_name
+        },
+        {
+          name  = "HELLO_WORLD_HOST_V1"
+          value = "http://hello-world:8080"
         }
       ]
 
@@ -62,12 +57,12 @@ module "service_connect_demo" {
 
   security_group_rules = {
     ingress_port_8080 = {
-      type                     = "ingress"
-      from_port                = 8080
-      to_port                  = 8080
-      protocol                 = "TCP"
-      source_security_group_id = module.demo_service.security_group_id
-      description              = "Allow traffic on ingress 8080 from demo service."
+      type        = "ingress"
+      from_port   = 8080
+      to_port     = 8080
+      protocol    = "TCP"
+      cidr_blocks = ["0.0.0.0/0"]
+      description = "Allow traffic on ingress 8080"
     }
     egress_all = {
       type      = "egress"
@@ -79,16 +74,6 @@ module "service_connect_demo" {
   }
 
   tags = merge(local.tags, {
-    Name = local.service_connect_example
-  })
-}
-
-resource "aws_service_discovery_http_namespace" "service_connect_namespace" {
-  count = var.enable_service_connect_demo ? 1 : 0
-
-  name = local.service_connect_example
-
-  tags = merge(local.tags, {
-    Name = local.service_connect_example
+    Name = local.demo_svc
   })
 }
