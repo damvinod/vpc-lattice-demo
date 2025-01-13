@@ -7,8 +7,8 @@ Below two tasks will be created and these are simple Java Spring boot apps which
 * `hello-service` in VPC `hello-world-svc-vpc`
     * `/hello` -> Returns a static response of `Hello`
 * `demo-service` in VPC `demo-svc-vpc`
-  * `/hello` -> Connects to /hello endpoint of `hello-world` using VPC lattice
-  * `/v1/hello` -> Connects to /hello endpoint of `hello-world` using service connect
+  * `/hello` -> Connects to `/hello` endpoint of `hello-world` using [VPC lattice service endpoint](https://github.com/damvinod/vpc-lattice-demo/blob/main/demo-svc.tf#L43).
+  * `/v1/hello` -> Connects to `/hello` endpoint of `hello-world` using service connect
 
 #### 2. ALB & Lambda:
 * An ALB with Lambda as a target group will be provisioned
