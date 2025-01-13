@@ -12,6 +12,8 @@ locals {
   hello_world_svc        = "${local.team}-${local.environment}-hello-world-svc"
   demo_svc        = "${local.team}-${local.environment}-demo-svc"
   hello_world_v1_svc        = "${local.team}-${local.environment}-hello-world-v1-svc"
+  alb_hello_world        = "${local.team}-${local.environment}-hello-world-alb"
+  lambda_hello_world        = "${local.team}-${local.environment}-hello-world-lambda"
 
   tasks_iam_role_statements = {
     execute_allow = {
