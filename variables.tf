@@ -8,7 +8,7 @@ variable "environment" {
   default     = "dev"
 }
 
-variable "create_rds" {
+variable "enable_vpc_lattice_rds_resource_gw" {
   type    = bool
   default = false
 }

@@ -83,7 +83,7 @@ module "hello_world_vpc" {
 }
 
 module "rds_vpc" {
-  count  = var.create_rds ? 1 : 0
+  count  = var.enable_vpc_lattice_rds_resource_gw ? 1 : 0
   source = "terraform-aws-modules/vpc/aws"
 
   name = local.rds_name

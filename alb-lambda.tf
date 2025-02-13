@@ -153,7 +153,6 @@ resource "aws_vpclattice_target_group_attachment" "lambda" {
 
   target {
     id   = module.alb_lambda_function.lambda_function_arn_static
-    port = 80
   }
 }
 

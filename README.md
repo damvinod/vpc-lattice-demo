@@ -4,9 +4,9 @@
 
 #### 1. ECS Task:
 Below two tasks will be created and these are simple Java Spring boot apps which has below endpoints
-* `hello-service` in VPC `hello-world-svc-vpc`
+* [hello-service](https://github.com/damvinod/hello-world) in VPC `hello-world-svc-vpc`
     * `/hello` -> Returns a static response of `Hello`
-* `demo-service` in VPC `demo-svc-vpc`
+* [demo-service](https://github.com/damvinod/demo-service) in VPC `demo-svc-vpc`
   * `/hello` -> Connects to `/hello` endpoint of `hello-world` using [VPC lattice service endpoint](https://github.com/damvinod/vpc-lattice-demo/blob/main/demo-svc.tf#L43).
   * `/v1/hello` -> Connects to `/hello` endpoint of `hello-world` using service connect
 
@@ -24,5 +24,6 @@ Below two tasks will be created and these are simple Java Spring boot apps which
   * `aws ecs execute-command --cluster merlion-dev-vpc-lattice-demo --task <task_id_demo-service> --container demo_service --command "/bin/sh" --interactive`
   * `curl http://localhost:8080/hello` -> Should be getting a response of `Hello`
 * Get the VPC Lattice Service domain and execute the below commands to verify the connectivity with ALB & Lambda
-    * `curl https://<vpc_lattice_service_domain>/alb` -> Should be getting a response of `Hello World`
-    * `curl https://<vpc_lattice_service_domain>/lambda` -> Should be getting a response of `Hello World`.
+  * Get the value from the output variable `vpc_lattice_service_endpoint` and use it in the below commands.
+  * `curl https://<vpc_lattice_service_endpoint>/alb` -> Should be getting a response of `Hello World`
+  * `curl https://<vpc_lattice_service_endpoint>/lambda` -> Should be getting a response of `Hello World`.
