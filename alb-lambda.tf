@@ -1,4 +1,6 @@
 module "alb_lambda_function" {
+  count = var.enable_vpc_lattice_service_demo ? 1 : 0
+
   source = "terraform-aws-modules/lambda/aws"
 
   function_name = local.alb_hello_world
@@ -12,7 +14,7 @@ module "alb_lambda_function" {
   allowed_triggers = {
     OneRule = {
       principal  = "elasticloadbalancing.amazonaws.com"
-      source_arn = aws_lb_target_group.lambda_target_group.arn
+      source_arn = aws_lb_target_group.lambda_target_group[0].arn
     }
   }
 
@@ -22,43 +24,53 @@ module "alb_lambda_function" {
 }
 
 resource "aws_lb" "load_balancer" {
+  count = var.enable_vpc_lattice_service_demo ? 1 : 0
+
   name               = local.alb_hello_world
   internal           = true
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.alb_lambda_security_group.id]
-  subnets            = module.hello_world_vpc.private_subnets
+  security_groups    = [aws_security_group.alb_lambda_security_group[0].id]
+  subnets            = module.hello_world_vpc[0].private_subnets
   tags = {
     Name = local.alb_hello_world
   }
 }
 
 resource "aws_lb_listener" "listener" {
-  load_balancer_arn = aws_lb.load_balancer.arn
+  count = var.enable_vpc_lattice_service_demo ? 1 : 0
+
+  load_balancer_arn = aws_lb.load_balancer[0].arn
   port              = 80
   protocol          = "HTTP"
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.lambda_target_group.arn
+    target_group_arn = aws_lb_target_group.lambda_target_group[0].arn
   }
 }
 
 resource "aws_lb_target_group" "lambda_target_group" {
+  count = var.enable_vpc_lattice_service_demo ? 1 : 0
+
   name        = local.alb_hello_world
   target_type = "lambda"
-  vpc_id      = module.hello_world_vpc.vpc_id
+  vpc_id      = module.hello_world_vpc[0].vpc_id
 }
 
 resource "aws_lb_target_group_attachment" "lambda_target_group_attachment" {
-  target_group_arn = aws_lb_target_group.lambda_target_group.arn
-  target_id        = module.alb_lambda_function.lambda_function_arn
+  count = var.enable_vpc_lattice_service_demo ? 1 : 0
+
+  target_group_arn = aws_lb_target_group.lambda_target_group[0].arn
+  target_id        = module.alb_lambda_function[0].lambda_function_arn
 
   depends_on = [aws_lb_listener.listener]
 }
 
 resource "aws_security_group" "alb_lambda_security_group" {
+  count = var.enable_vpc_lattice_service_demo ? 1 : 0
+
   name = "${local.alb_hello_world}-sg"
 
-  vpc_id = module.hello_world_vpc.vpc_id
+  vpc_id = module.hello_world_vpc[0].vpc_id
 
   ingress {
     from_port       = 80
@@ -76,11 +88,13 @@ resource "aws_security_group" "alb_lambda_security_group" {
 #VPC LATTICE FOR ALB
 #####################
 resource "aws_vpclattice_target_group" "alb_lambda" {
+  count = var.enable_vpc_lattice_service_demo ? 1 : 0
+
   name = local.alb_hello_world
   type = "ALB"
 
   config {
-    vpc_identifier = module.hello_world_vpc.vpc_id
+    vpc_identifier = module.hello_world_vpc[0].vpc_id
 
     port     = 80
     protocol = "HTTP"
@@ -92,18 +106,22 @@ resource "aws_vpclattice_target_group" "alb_lambda" {
 }
 
 resource "aws_vpclattice_target_group_attachment" "alb_lambda" {
-  target_group_identifier = aws_vpclattice_target_group.alb_lambda.id
+  count = var.enable_vpc_lattice_service_demo ? 1 : 0
+
+  target_group_identifier = aws_vpclattice_target_group.alb_lambda[0].id
 
   target {
-    id   = aws_lb.load_balancer.arn
+    id   = aws_lb.load_balancer[0].arn
     port = 80
   }
 }
 
 resource "aws_vpclattice_listener_rule" "alb_lambda_response" {
+  count = var.enable_vpc_lattice_service_demo ? 1 : 0
+
   name                = local.alb_hello_world
-  listener_identifier = aws_vpclattice_listener.hello_world.listener_id
-  service_identifier  = aws_vpclattice_service.hello_world.id
+  listener_identifier = aws_vpclattice_listener.hello_world[0].listener_id
+  service_identifier  = aws_vpclattice_service.hello_world[0].id
   priority            = 2
 
   match {
@@ -121,7 +139,7 @@ resource "aws_vpclattice_listener_rule" "alb_lambda_response" {
   action {
     forward {
       target_groups {
-        target_group_identifier = aws_vpclattice_target_group.alb_lambda.id
+        target_group_identifier = aws_vpclattice_target_group.alb_lambda[0].id
         weight                  = 1
       }
     }
@@ -136,6 +154,8 @@ resource "aws_vpclattice_listener_rule" "alb_lambda_response" {
 #VPC LATTICE FOR LAMBDA
 ########################
 resource "aws_vpclattice_target_group" "lambda" {
+  count = var.enable_vpc_lattice_service_demo ? 1 : 0
+
   name = local.lambda_hello_world
   type = "LAMBDA"
 
@@ -149,17 +169,21 @@ resource "aws_vpclattice_target_group" "lambda" {
 }
 
 resource "aws_vpclattice_target_group_attachment" "lambda" {
-  target_group_identifier = aws_vpclattice_target_group.lambda.id
+  count = var.enable_vpc_lattice_service_demo ? 1 : 0
+
+  target_group_identifier = aws_vpclattice_target_group.lambda[0].id
 
   target {
-    id   = module.alb_lambda_function.lambda_function_arn_static
+    id = module.alb_lambda_function[0].lambda_function_arn_static
   }
 }
 
 resource "aws_vpclattice_listener_rule" "lambda_response" {
+  count = var.enable_vpc_lattice_service_demo ? 1 : 0
+
   name                = local.lambda_hello_world
-  listener_identifier = aws_vpclattice_listener.hello_world.listener_id
-  service_identifier  = aws_vpclattice_service.hello_world.id
+  listener_identifier = aws_vpclattice_listener.hello_world[0].listener_id
+  service_identifier  = aws_vpclattice_service.hello_world[0].id
   priority            = 3
 
   match {
@@ -177,7 +201,7 @@ resource "aws_vpclattice_listener_rule" "lambda_response" {
   action {
     forward {
       target_groups {
-        target_group_identifier = aws_vpclattice_target_group.lambda.id
+        target_group_identifier = aws_vpclattice_target_group.lambda[0].id
         weight                  = 1
       }
     }

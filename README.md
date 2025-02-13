@@ -21,6 +21,8 @@ Below two tasks will be created and these are simple Java Spring boot apps which
 * ``terraform plan``
 * ``terraform apply``
 * Get the ECS task id for `demo-service` and execute the below commands
+  * Get the task id using the below command
+    * `aws ecs list-tasks --cluster merlion-dev-vpc-lattice-demo --service-name merlion-dev-demo-svc`
   * `aws ecs execute-command --cluster merlion-dev-vpc-lattice-demo --task <task_id_demo-service> --container demo_service --command "/bin/sh" --interactive`
   * `curl http://localhost:8080/hello` -> Should be getting a response of `Hello`
 * Get the VPC Lattice Service domain and execute the below commands to verify the connectivity with ALB & Lambda

@@ -8,7 +8,12 @@ variable "environment" {
   default     = "dev"
 }
 
-variable "enable_vpc_lattice_rds_resource_gw" {
+variable "enable_vpc_lattice_service_demo" {
+  type    = bool
+  default = false
+}
+
+variable "enable_vpc_lattice_rds_resource_gw_demo" {
   type    = bool
   default = false
 }

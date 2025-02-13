@@ -41,6 +41,8 @@ module "demo_service_vpc" {
 }
 
 module "hello_world_vpc" {
+  count = var.enable_vpc_lattice_service_demo ? 1 : 0
+
   source = "terraform-aws-modules/vpc/aws"
 
   name = local.hello_world_svc
@@ -83,7 +85,7 @@ module "hello_world_vpc" {
 }
 
 module "rds_vpc" {
-  count  = var.enable_vpc_lattice_rds_resource_gw ? 1 : 0
+  count  = var.enable_vpc_lattice_rds_resource_gw_demo ? 1 : 0
   source = "terraform-aws-modules/vpc/aws"
 
   name = local.rds_name

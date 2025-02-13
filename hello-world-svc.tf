@@ -1,4 +1,6 @@
 resource "aws_ecs_service" "hello_world_svc" {
+  count = var.enable_vpc_lattice_service_demo ? 1 : 0
+
   name    = local.hello_world_svc
   cluster = module.ecs.cluster_arn
 
@@ -12,18 +14,18 @@ resource "aws_ecs_service" "hello_world_svc" {
   launch_type                        = "FARGATE"
   propagate_tags                     = "NONE"
 
-  task_definition = module.hello_world.task_definition_arn
+  task_definition = module.hello_world[0].task_definition_arn
 
   network_configuration {
     assign_public_ip = true
-    security_groups  = [module.hello_world.security_group_id]
-    subnets          = module.hello_world_vpc.private_subnets
+    security_groups  = [module.hello_world[0].security_group_id]
+    subnets          = module.hello_world_vpc[0].private_subnets
   }
 
   vpc_lattice_configurations {
     port_name        = "port-8080"
-    role_arn         = aws_iam_role.ecs_infra_role.arn
-    target_group_arn = aws_vpclattice_target_group.hello_world.arn
+    role_arn         = aws_iam_role.ecs_infra_role[0].arn
+    target_group_arn = aws_vpclattice_target_group.hello_world[0].arn
   }
 
   tags = merge(local.tags, {
@@ -35,6 +37,8 @@ resource "aws_ecs_service" "hello_world_svc" {
 }
 
 module "hello_world" {
+  count = var.enable_vpc_lattice_service_demo ? 1 : 0
+
   source = "terraform-aws-modules/ecs/aws//modules/service"
 
   cpu    = 256
@@ -77,7 +81,7 @@ module "hello_world" {
     }
   }
 
-  subnet_ids = module.hello_world_vpc.private_subnets
+  subnet_ids = module.hello_world_vpc[0].private_subnets
 
   security_group_rules = {
     ingress_port_8080 = {
@@ -106,11 +110,13 @@ module "hello_world" {
 #VPC LATTICE
 ################
 resource "aws_vpclattice_target_group" "hello_world" {
+  count = var.enable_vpc_lattice_service_demo ? 1 : 0
+
   name = local.hello_world_svc
   type = "IP"
 
   config {
-    vpc_identifier = module.hello_world_vpc.vpc_id
+    vpc_identifier = module.hello_world_vpc[0].vpc_id
 
     ip_address_type = "IPV4"
     port            = 8080
@@ -132,9 +138,11 @@ resource "aws_vpclattice_target_group" "hello_world" {
 }
 
 resource "aws_vpclattice_listener_rule" "hello_world_get_hello_response" {
+  count = var.enable_vpc_lattice_service_demo ? 1 : 0
+
   name                = local.hello_world_svc
-  listener_identifier = aws_vpclattice_listener.hello_world.listener_id
-  service_identifier  = aws_vpclattice_service.hello_world.id
+  listener_identifier = aws_vpclattice_listener.hello_world[0].listener_id
+  service_identifier  = aws_vpclattice_service.hello_world[0].id
   priority            = 1
 
   match {
@@ -152,7 +160,7 @@ resource "aws_vpclattice_listener_rule" "hello_world_get_hello_response" {
   action {
     forward {
       target_groups {
-        target_group_identifier = aws_vpclattice_target_group.hello_world.id
+        target_group_identifier = aws_vpclattice_target_group.hello_world[0].id
         weight                  = 1
       }
     }

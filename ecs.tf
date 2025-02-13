@@ -26,10 +26,11 @@ module "ecs" {
 }
 
 resource "aws_iam_role" "ecs_infra_role" {
+  count = var.enable_vpc_lattice_service_demo ? 1 : 0
 
   name_prefix = "${local.name}-infra-"
 
-  assume_role_policy    = data.aws_iam_policy_document.ecs_infra_role_assume_policy.json
+  assume_role_policy    = data.aws_iam_policy_document.ecs_infra_role_assume_policy[0].json
   force_detach_policies = true
   managed_policy_arns   = ["arn:aws:iam::aws:policy/AmazonECSInfrastructureRolePolicyForVpcLattice"]
 
@@ -37,6 +38,7 @@ resource "aws_iam_role" "ecs_infra_role" {
 }
 
 data "aws_iam_policy_document" "ecs_infra_role_assume_policy" {
+  count = var.enable_vpc_lattice_service_demo ? 1 : 0
 
   statement {
     sid     = "AllowAccessToECSForInfrastructureManagement"

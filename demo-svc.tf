@@ -33,20 +33,21 @@ module "demo_service" {
           protocol      = "tcp"
         }
       ]
-      environment = [
+      environment = concat([
         {
           name  = "ENVIRONMENT"
           value = var.environment
         },
         {
-          name  = "HELLO_WORLD_HOST"
-          value = aws_vpclattice_service.hello_world.dns_entry[0].domain_name
-        },
-        {
           name  = "HELLO_WORLD_HOST_V1"
           value = "http://hello-world:8080"
         }
-      ]
+        ], var.enable_vpc_lattice_service_demo ? [
+        {
+          name  = "HELLO_WORLD_HOST"
+          value = aws_vpclattice_service.hello_world[0].dns_entry[0].domain_name
+        }
+      ] : [])
 
       # Example image used requires access to write to root filesystem
       readonly_root_filesystem = false
