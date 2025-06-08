@@ -9,14 +9,14 @@ variable "environment" {
 }
 
 variable "enable_vpc_lattice_service_demo" {
-  type    = bool
-  default = false
+  type        = bool
+  default     = false
   description = "This feature toggle demonstrates Lattice Service features"
 }
 
 variable "enable_vpc_lattice_rds_resource_gw_demo" {
-  type    = bool
-  default = false
+  type        = bool
+  default     = false
   description = "This feature toggle demonstrates Lattice Resource Gateway with RDS feature."
 }
 
