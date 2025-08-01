@@ -12,11 +12,9 @@ module "ecs" {
     }
   }
 
-  fargate_capacity_providers = {
+  default_capacity_provider_strategy = {
     FARGATE_SPOT = {
-      default_capacity_provider_strategy = {
-        weight = 100
-      }
+      weight = 100
     }
   }
 
@@ -32,9 +30,15 @@ resource "aws_iam_role" "ecs_infra_role" {
 
   assume_role_policy    = data.aws_iam_policy_document.ecs_infra_role_assume_policy[0].json
   force_detach_policies = true
-  managed_policy_arns   = ["arn:aws:iam::aws:policy/AmazonECSInfrastructureRolePolicyForVpcLattice"]
 
   tags = local.tags
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_infra_role_attachment" {
+  count = var.enable_vpc_lattice_service_demo ? 1 : 0
+
+  role       = aws_iam_role.ecs_infra_role[0].name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonECSInfrastructureRolePolicyForVpcLattice"
 }
 
 data "aws_iam_policy_document" "ecs_infra_role_assume_policy" {

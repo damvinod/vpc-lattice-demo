@@ -9,6 +9,7 @@ module "demo_service" {
 
   assign_public_ip     = true
   autoscaling_policies = {}
+  enable_autoscaling   = false
   desired_count        = 1
 
   enable_execute_command    = true
@@ -26,7 +27,7 @@ module "demo_service" {
       memory    = 512
       essential = true
       image     = "vinodreddy25/demo-service:master"
-      port_mappings = [
+      portMappings = [
         {
           name          = "port-8080"
           containerPort = 8080
@@ -50,27 +51,30 @@ module "demo_service" {
       ] : [])
 
       # Example image used requires access to write to root filesystem
-      readonly_root_filesystem = false
+      readonlyRootFilesystem = false
     }
   }
 
   subnet_ids = module.demo_service_vpc.private_subnets
 
-  security_group_rules = {
+  security_group_ingress_rules = {
     ingress_port_8080 = {
       type        = "ingress"
       from_port   = 8080
       to_port     = 8080
       protocol    = "TCP"
-      cidr_blocks = ["0.0.0.0/0"]
+      cidr_ipv4   = "0.0.0.0/0"
       description = "Allow traffic on ingress 8080"
     }
+  }
+
+  security_group_egress_rules = {
     egress_all = {
-      type        = "egress"
-      from_port   = 0
-      to_port     = 0
-      protocol    = "-1"
-      cidr_blocks = ["0.0.0.0/0"]
+      type      = "egress"
+      from_port = 0
+      to_port   = 0
+      protocol  = "-1"
+      cidr_ipv4 = "0.0.0.0/0"
     }
   }
 

@@ -15,20 +15,20 @@ locals {
   alb_hello_world    = "${local.team}-${local.environment}-hello-world-alb"
   lambda_hello_world = "${local.team}-${local.environment}-hello-world-lambda"
 
-  tasks_iam_role_statements = {
-    execute_allow = {
+  tasks_iam_role_statements = [
+    {
       actions   = ["ecs:ExecuteCommand"]
       effect    = "Allow"
       resources = [module.ecs.cluster_arn]
     }
-  }
-  task_exec_iam_statements = {
-    create_log_group_for_service_connect = {
+  ]
+  task_exec_iam_statements = [
+    {
       actions   = ["logs:CreateLogGroup"]
       effect    = "Allow"
       resources = ["*"]
     }
-  }
+  ]
 
   rds_name = "${local.name}-rds"
 }
